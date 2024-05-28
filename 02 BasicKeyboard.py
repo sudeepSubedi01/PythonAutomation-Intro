@@ -17,3 +17,5 @@ Sending keystrokes to applications (for example, to fill out forms).
 Take screenshots, and given an image (for example, of a button or checkbox), and find it on the screen.
 Locate an application’s window, and move, resize, maximize, minimize, or close it (Windows-only, currently).
 Display alert and message boxes.''',interval=0.01)
+
+pg.alert('This is an alert')
