@@ -1,6 +1,6 @@
 from pytube import YouTube    #YouTube is a class
 
-url = 'https://youtu.be/W5p1kZ7YlZ4'
+url = 'https://youtu.be/0bfk90rWV9U?list=RDxdcIwXC_Ouk'
 yt = YouTube(url) 	    #instantiation of YouTube class; yt has access to streams, captions,title,length... of the video
 
 print('Title: ', yt.title)
@@ -11,9 +11,9 @@ print('Length: ', yt.length)
 print('Streams: ',yt.streams)
 
 # stream = yt.streams.get_highest_resolution()
-stream = yt.streams.filter(only_audio=True).first()
+stream = yt.streams.filter(only_audio=False).first()
 
-stream.download('D:\\PythonAutomation',filename='got.mp3')
+stream.download('C:\\Users\\Acer1\\Pictures\\D drive files',filename='got.mp4')
 print('Done')
 
 #streams is an attribute of YouTube object that is an instance of StreamQuery class
