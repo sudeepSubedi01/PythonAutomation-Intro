@@ -1,38 +1,73 @@
 import pandas as pd
 from PIL import Image, ImageFont, ImageDraw
 import smtplib
+from email.message import EmailMessage
+import os
 
-sender = 'test@gmail.com'
-password = 'test1'
-# receiver = 'test2@gmail.com'
-subject = 'Welcome to the Welcome program'
-body1 = 'Hello we welcome you to the welcome party'
+#text box info
+textFieldHeight = 156
+textFieldWidth = 947
+textFieldX = 236
+textFieldY = 997
+textFieldCenterX = textFieldX + textFieldWidth//2
+textFieldCenterY= textFieldY + textFieldHeight//2
+font = ImageFont.truetype('AlexBrush-Regular.ttf',100)
 
-# server = smtplib.SMTP('smtp.gmail.com',587)
-# server.starttls()
-# server.login(sender,password)
-# print('Logged in!!!')
+#credentials
+sender = '079bei042.sudeep@pcampus.edu.np'
+password = 'electronics@#785'
+subject = 'You are invited....'
+body1 = 'Sample mail 3'
 
-position = (270,390)
-font = ImageFont.truetype('consola.ttf',36)
-data = pd.read_csv('contacts50.csv')
+server = smtplib.SMTP('smtp.gmail.com',587)
+server.starttls()
+server.login(sender,password)
+print('Logged in!!!')
+
+# position = (270,390)
+data = pd.read_csv('sample.csv')
 df = pd.DataFrame(data)
 df['FullName'] = df['first_name'] +' '+ df['last_name']
 nameList = df['FullName'].head().values
 emailList = df['email'].head().values
+
 for singleName, singleEmail in zip(nameList,emailList):
-  print('looping')
-  card = Image.open('card.jpeg')
+  card = Image.open('card.png')
   drawName = ImageDraw.Draw(card)
-  drawName.text(position,singleName,(143,0,255),font = font)
-  card.show()
-  # ----------------------------------------------------------------------
-  print(singleName,singleEmail)
-  receiver = singleEmail
-  # message = f'''From: Sender{sender}
-  # To: receiver{singleEmail}
-  # Subject: {subject}\n
-  # {body1}'''
-  # server.sendmail(sender,singleEmail,message)
-  # print(f"Email sent successfully to {singleName}")
-  
+  singleName = str(singleName)
+  singleEmail = str(singleEmail)
+  # drawing in place
+  bbox = drawName.textbbox((0, 0), singleName, font=font)
+  text_width = bbox[2] - bbox[0]
+  text_height = bbox[3] - bbox[1]
+  name_x = textFieldCenterX - text_width // 2
+  name_y = textFieldCenterY - text_height // 2
+  drawName.text((name_x,name_y),singleName,fill=(244,189,24), font=font)
+  # card.show()
+  # print(singleName,singleEmail)
+  # saving file
+  temp_filename = f"welcome_{singleName.replace(' ', '_')}.png"
+  card.save(temp_filename)
+
+  # email message creation
+  msg = EmailMessage()
+  msg['From'] = sender
+  msg['To'] = singleEmail
+  msg['Subject'] = subject
+  msg.set_content(body1)
+    
+  # attaching image to the email
+  with open(temp_filename, 'rb') as img:
+      img_data = img.read()
+      img_name = os.path.basename(temp_filename)
+      msg.add_attachment(img_data, maintype='image', subtype='png', filename=img_name)
+    
+  # sending email
+  server.send_message(msg)
+  print(f"Sent to: {singleName}")
+
+  # deleting temporary file
+  os.remove(temp_filename)
+
+server.quit()
+print('Server closed')
